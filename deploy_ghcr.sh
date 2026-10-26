@@ -4,6 +4,7 @@ set -Eeuo pipefail
 umask 077
 
 RELEASE=45c0125498d226104b16e4740dfbdd9cdaf562c7
+CONFIG_RELEASE=53ca677a0b436162392d83a3f5d0782814fc0cf5
 REPOSITORY=ZYaosheng/xianyu-auto-reply
 INSTALL_DIR=/opt/xianyu-managed
 PROJECT=xianyu-managed
@@ -58,10 +59,10 @@ port=$(awk -F= '/^FRONTEND_PORT=/{sub(/\r$/, "", $2); print $2}' .env)
 port=$((10#$port))
 (( port >= 1 && port <= 65535 )) || die 'FRONTEND_PORT 必须在 1 到 65535 之间。'
 
-# The Compose file is pinned to the release whose four images were built successfully.
+# Pin deployment fixes independently of the already verified application images.
 temporary_file=$(mktemp "$INSTALL_DIR/.compose.XXXXXX")
 curl -fL --retry 3 --connect-timeout 15 --max-time 180 \
-  "https://raw.githubusercontent.com/${REPOSITORY}/${RELEASE}/docker-compose.ghcr.yml" \
+  "https://raw.githubusercontent.com/${REPOSITORY}/${CONFIG_RELEASE}/docker-compose.ghcr.yml" \
   -o "$temporary_file"
 docker compose --project-name "$PROJECT" --env-file .env -f "$temporary_file" config --quiet
 mv -- "$temporary_file" docker-compose.ghcr.yml
@@ -85,7 +86,7 @@ if ! "${compose[@]}" pull; then
 fi
 
 echo '启动项目并等待健康检查……'
-if ! "${compose[@]}" up -d --wait --wait-timeout 300; then
+if ! "${compose[@]}" up -d --wait --wait-timeout 900; then
   "${compose[@]}" ps --all
   printf '\n启动未完成，查看日志：\ncd %s && docker compose -p %s -f docker-compose.ghcr.yml logs --tail=100\n' "$INSTALL_DIR" "$PROJECT" >&2
   exit 1

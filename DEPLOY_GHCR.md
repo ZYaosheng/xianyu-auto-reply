@@ -28,6 +28,8 @@ docker login ghcr.io -u YOUR_GITHUB_USERNAME
 安装目录为 `/opt/xianyu-managed`。重复运行保留已有 `.env` 的密码、端口和镜像版本。
 端口冲突时修改该目录 `.env` 中的 `FRONTEND_PORT` 后重试。
 首次部署使用提交 `45c0125498d226104b16e4740dfbdd9cdaf562c7` 的镜像；
+部署文件单独固定到修正版本，连接池默认值均为 600，以满足源码配置校验。
+MySQL 首次初始化宽限期为 180 秒，脚本整体启动等待时间为 900 秒。
 后续更新仍需等待新的四个镜像全部成功后再修改 `IMAGE_TAG`。
 
 ### 手动部署
