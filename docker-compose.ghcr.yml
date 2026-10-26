@@ -135,8 +135,8 @@ services:
       - http://localhost:8089/health
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 10
+      start_period: 600s
     image: ${IMAGE_PREFIX:?Set IMAGE_PREFIX}-backend-web:${IMAGE_TAG:?Set IMAGE_TAG}
   websocket:
     restart: unless-stopped
@@ -207,8 +207,8 @@ services:
       - http://localhost:8090/health
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 5
+      start_period: 180s
     image: ${IMAGE_PREFIX:?Set IMAGE_PREFIX}-websocket:${IMAGE_TAG:?Set IMAGE_TAG}
   scheduler:
     restart: unless-stopped
@@ -277,8 +277,8 @@ services:
       - http://localhost:8091/health
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 5
+      start_period: 180s
     image: ${IMAGE_PREFIX:?Set IMAGE_PREFIX}-scheduler:${IMAGE_TAG:?Set IMAGE_TAG}
   frontend:
     restart: unless-stopped
