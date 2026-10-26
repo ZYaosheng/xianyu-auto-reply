@@ -29,7 +29,8 @@ docker login ghcr.io -u YOUR_GITHUB_USERNAME
 端口冲突时修改该目录 `.env` 中的 `FRONTEND_PORT` 后重试。
 首次部署使用提交 `45c0125498d226104b16e4740dfbdd9cdaf562c7` 的镜像；
 部署文件单独固定到修正版本，连接池默认值均为 600，以满足源码配置校验。
-MySQL 首次初始化宽限期为 180 秒，脚本整体启动等待时间为 900 秒。
+MySQL 首次初始化宽限期为 180 秒，后端为 600 秒，WebSocket 和 Scheduler 为 180 秒。
+脚本整体启动等待时间为 1800 秒；健康检查提前通过时立即继续启动依赖服务。
 后续更新仍需等待新的四个镜像全部成功后再修改 `IMAGE_TAG`。
 
 ### 手动部署
@@ -51,7 +52,7 @@ MySQL 应用密码、Redis 密码、内部 API token。保留这些配置用于�
 ```bash
 docker compose -f docker-compose.ghcr.yml config --quiet
 docker compose -f docker-compose.ghcr.yml pull
-docker compose -f docker-compose.ghcr.yml up -d --wait --wait-timeout 300
+docker compose -f docker-compose.ghcr.yml up -d --wait --wait-timeout 1800
 docker compose -f docker-compose.ghcr.yml ps
 curl -f http://127.0.0.1:9000/health
 ```
@@ -69,7 +70,7 @@ curl -f http://127.0.0.1:9000/health
 
 ```bash
 docker compose -f docker-compose.ghcr.yml pull
-docker compose -f docker-compose.ghcr.yml up -d --wait --wait-timeout 300
+docker compose -f docker-compose.ghcr.yml up -d --wait --wait-timeout 1800
 docker compose -f docker-compose.ghcr.yml ps
 ```
 

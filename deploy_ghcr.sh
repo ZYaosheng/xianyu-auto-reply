@@ -4,7 +4,7 @@ set -Eeuo pipefail
 umask 077
 
 RELEASE=45c0125498d226104b16e4740dfbdd9cdaf562c7
-CONFIG_RELEASE=53ca677a0b436162392d83a3f5d0782814fc0cf5
+CONFIG_RELEASE=0c33d8fa9a04ba02e7b2c515d29b1bb1eda37428
 REPOSITORY=ZYaosheng/xianyu-auto-reply
 INSTALL_DIR=/opt/xianyu-managed
 PROJECT=xianyu-managed
@@ -86,7 +86,7 @@ if ! "${compose[@]}" pull; then
 fi
 
 echo '启动项目并等待健康检查……'
-if ! "${compose[@]}" up -d --wait --wait-timeout 900; then
+if ! "${compose[@]}" up -d --wait --wait-timeout 1800; then
   "${compose[@]}" ps --all
   printf '\n启动未完成，查看日志：\ncd %s && docker compose -p %s -f docker-compose.ghcr.yml logs --tail=100\n' "$INSTALL_DIR" "$PROJECT" >&2
   exit 1
