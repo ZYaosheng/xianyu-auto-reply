@@ -41,6 +41,9 @@ if [[ ! -e .env ]]; then
 IMAGE_PREFIX=ghcr.io/zyaosheng/xianyu-auto-reply
 IMAGE_TAG=sha-${RELEASE}
 FRONTEND_PORT=19000
+ENABLE_REMOTE_ADS=false
+ENABLE_REMOTE_ANNOUNCEMENTS=false
+ENABLE_REMOTE_POPUP_ANNOUNCEMENTS=false
 MYSQL_ROOT_PASSWORD=${mysql_root_password}
 MYSQL_PASSWORD=${mysql_password}
 REDIS_PASSWORD=${redis_password}

@@ -85,3 +85,12 @@ docker compose -f docker-compose.ghcr.yml logs --tail=100 backend-web websocket 
 
 原仓库的 `deploy.sh` / `update.sh` 会生成原作者镜像配置，本流程使用上述独立文件。
 本地仅完成配置检查，实际镜像构建和启动仍需 Actions 与 Debian 验证。
+
+## 远程广告与公告
+
+GHCR 部署默认关闭原作者服务器的远程广告、公告和弹窗公告。
+新脚本生成的 `.env` 也会写入这三个开关。已有部署需要在 `.env` 中设置
+`ENABLE_REMOTE_ADS=false`、`ENABLE_REMOTE_ANNOUNCEMENTS=false`、
+`ENABLE_REMOTE_POPUP_ANNOUNCEMENTS=false`，然后执行
+`docker compose -p xianyu-managed -f docker-compose.ghcr.yml up -d --no-deps backend-web`。
+本地管理员自行发布的公告仍由后台公告管理控制。
