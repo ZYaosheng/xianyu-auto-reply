@@ -19,6 +19,19 @@ docker login ghcr.io -u YOUR_GITHUB_USERNAME
 
 ## 首次部署
 
+### NAS 脚本部署（默认 19000 端口）
+
+仓库根目录的 `deploy_ghcr.sh` 自动下载已经验证构建成功的版本配置，生成随机密码，
+检查端口，拉取镜像并等待健康检查。以 root 或 `sudo bash deploy_ghcr.sh` 运行。
+要求已有 Docker Compose、curl、openssl、ss，适用于 x86_64 Debian。
+
+安装目录为 `/opt/xianyu-managed`。重复运行保留已有 `.env` 的密码、端口和镜像版本。
+端口冲突时修改该目录 `.env` 中的 `FRONTEND_PORT` 后重试。
+首次部署使用提交 `45c0125498d226104b16e4740dfbdd9cdaf562c7` 的镜像；
+后续更新仍需等待新的四个镜像全部成功后再修改 `IMAGE_TAG`。
+
+### 手动部署
+
 把本仓库的 `docker-compose.ghcr.yml`、`.env.ghcr.example` 放入 Debian 上
 独立的新目录，例如 `/opt/xianyu-managed`，进入该目录执行：
 
