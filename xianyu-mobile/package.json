@@ -40,7 +40,7 @@
     "babel-plugin-module-resolver": "^5.0.3",
     "babel-preset-expo": "^57.0.8",
     "tsx": "^4.23.12",
-    "typescript": "~6.0.3"
+    "typescript": "~5.9.3"
   },
   "private": true
 }
