@@ -49,7 +49,7 @@
 | 路由 | expo-router (文件路由 + typedRoutes) | ~57.0.16 |
 | 状态管理 | zustand | ^5.0.15 |
 | API 层 | openapi-fetch + openapi-typescript | ^0.17.0 / ^7.13.0 |
-| 语言 | TypeScript strict | ~6.0.3 |
+| 语言 | TypeScript strict | ~5.9.3 |
 | 图标 | lucide-react-native | ^1.34.0 |
 | 安全存储 | expo-secure-store (token) + AsyncStorage (profile) | |
 | 实时通信 | 原生 WebSocket（指数退避重连 + AppState 前台恢复） | |
