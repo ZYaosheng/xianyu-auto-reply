@@ -1,0 +1,89 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - xianyu-mobile/**
+      - .github/workflows/android-apk.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CI: 'true'
+      EXPO_NO_TELEMETRY: '1'
+      NODE_OPTIONS: --max-old-space-size=3072
+    defaults:
+      run:
+        working-directory: xianyu-mobile
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: xianyu-mobile/package-lock.json
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            xianyu-mobile/android/**/*.gradle
+            xianyu-mobile/android/gradle.properties
+            xianyu-mobile/android/gradle/wrapper/gradle-wrapper.properties
+            xianyu-mobile/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build standalone ARM64 APK
+        working-directory: xianyu-mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+            -PreactNativeArchitectures=arm64-v8a --console=plain --stacktrace
+      - name: Verify and prepare download
+        run: |
+          apk=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$apk"
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)
+          test -n "$signer"
+          "$signer" verify --verbose --print-certs "$apk"
+          mkdir -p apk-download
+          cp "$apk" apk-download/xianyu-mobile-arm64.apk
+          cd apk-download
+          sha256sum xianyu-mobile-arm64.apk > SHA256SUMS.txt
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: xianyu-mobile-arm64
+          path: xianyu-mobile/apk-download/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish downloadable APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="mobile-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}-${GITHUB_SHA:0:7}"
+          printf '%s\n' \
+            'Android ARM64 自用安装包，沿用源码中的 debug 签名。' \
+            '安装后在服务器配置中填写自己的后台地址，例如 http://NAS局域网IP:19000。' \
+            "源码提交：${GITHUB_SHA}" > apk-download/RELEASE_NOTES.md
+          gh release create "$tag" \
+            apk-download/xianyu-mobile-arm64.apk apk-download/SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "闲鱼管家 Android ARM64 · ${GITHUB_SHA:0:7}" \
+            --notes-file apk-download/RELEASE_NOTES.md --prerelease
+          printf 'APK 下载：[打开发布页面](https://github.com/%s/releases/tag/%s)\n' \
+            "$GITHUB_REPOSITORY" "$tag" >> "$GITHUB_STEP_SUMMARY"

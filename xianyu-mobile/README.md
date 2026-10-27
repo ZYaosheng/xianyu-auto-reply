@@ -104,6 +104,8 @@ npx expo start --dev-client
 
 ### Release APK 构建
 
+本仓库现支持 GitHub Actions 自动构建并发布 APK，参见 [自动打包说明](BUILD_APK.md)。
+
 因 Windows 中文路径会导致 Gradle 失败，需同步到 ASCII 路径副本构建：
 
 ```bash
